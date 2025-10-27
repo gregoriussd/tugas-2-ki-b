@@ -339,18 +339,13 @@ public:
 		
 		for (int i = 0; i < cipher_txt.size(); i += 16) {
 			string block = cipher_txt.substr(i, 16);
-			cout << "Block " << (i/16 + 1) << " input:  " << block << endl;
 			
 			string decrypted_block = decrypt_block(block, key);
 			result += decrypted_block;
-			
-			cout << "Block " << (i/16 + 1) << " output: " << decrypted_block << endl;
 		}
-		
-		cout << "Decrypted hexadecimal result: " << result << endl;	
-		
+				
 		string text_result = hex_to_text(result);
-		cout << "Decrypted text result: " << text_result << endl;
+		cout << text_result << endl;
 	}
 
 };
@@ -368,43 +363,28 @@ bool validate_hex_string_key(const string& s) {
 	return true;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	DES_Decryption DES;
 	
+	// Check if enough arguments are provided
+	if (argc < 3) {
+		cout << "Usage: " << argv[0] << " <encrypted_hex> <key>" << endl;
+		cout << "Example: " << argv[0] << " 85E813540F0AB405 133457799BBCDFF1" << endl;
+		return 1;
+	}
+	
 	string cipher_txt, key;
-	ifstream input_file("encrypted.txt");
 	
-	if (!input_file.is_open()) {
-		cout << "Error: Could not open input file!" << endl;
+	cipher_txt = argv[1];
+	key = argv[2];
+	
+	// Validate key format
+	if (!validate_hex_string_key(key)) {
+		cout << "Error: Key must be exactly 16 hexadecimal characters!" << endl;
 		return 1;
 	}
-	
-	
-	if (!getline(input_file, cipher_txt)) {
-		cout << "Error: Could not read encrypted data from file!" << endl;
-		input_file.close();
-		return 1;
-	}
-	
-	input_file.close();
-	
-	bool is_valid;
-	cout << "Enter KEY (16 Hexadecimal Character) : ";
-	
-	do {
-		is_valid = true;
-		cin >> key;
-		
-		if (!validate_hex_string_key(key)) {
-			is_valid = false;
-			cout << "Invalid input, try again : ";
-		}
-	} while (!is_valid);
-	
-	cout << "Encrypted input: " << cipher_txt << endl;
-	cout << "Key entered: " << key << endl;
-	cout << endl;
+
 	DES.decrypt(cipher_txt, key);
 	
 	return 0;

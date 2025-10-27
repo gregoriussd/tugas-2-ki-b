@@ -1,6 +1,4 @@
-
 import socket
-
 
 def get_my_socket():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

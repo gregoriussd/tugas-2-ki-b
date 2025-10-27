@@ -390,15 +390,12 @@ public:
 		// Enkripsi per block (16 karakter hex = 64 bit)
 		for (int i = 0; i < padded_data.size(); i += 16) {
 			string block = padded_data.substr(i, 16);
-			cout << "Block " << (i/16 + 1) << " input:  " << block << endl;
 			
 			string encrypted_block = encrypt_block(block, key);
 			result += encrypted_block;
-			
-			cout << "Block " << (i/16 + 1) << " output: " << encrypted_block << endl;
 		}
 		
-		cout << "Encrypted result: " << result << endl;
+		cout << result << endl;
 	}
 };
 
@@ -428,45 +425,28 @@ bool validate_hex_string_data(const string& s) {
 	return true;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	DES_Encryption DES;
 	
+	// Check if enough arguments are provided
+	if (argc < 3) {
+		cout << "Usage: " << argv[0] << " <plaintext> <key>" << endl;
+		cout << "Example: " << argv[0] << " \"Hello World\" 133457799BBCDFF1" << endl;
+		return 1;
+	}
+	
 	string plain_txt, key;
-	// Baca plaintext dari file message.txt
-	ifstream input_file("message.txt");
 	
-	if (!input_file.is_open()) {
-		cout << "Error: Could not open input file!" << endl;
+	plain_txt = argv[1];
+	key = argv[2];
+	
+	// Validate key format
+	if (!validate_hex_string_key(key)) {
+		cout << "Error: Key must be exactly 16 hexadecimal characters!" << endl;
 		return 1;
 	}
 	
-	if (!getline(input_file, plain_txt)) {
-		cout << "Error: Could not read plain text from file!" << endl;
-		input_file.close();
-		return 1;
-	}
-	
-	input_file.close();
-
-	// Input key dari user dengan validasi
-	bool is_valid;
-	cout << "Enter KEY (16 Hexadecimal Character) : ";
-	
-	do {
-		is_valid = true;
-		cin >> key;
-		
-		if (!validate_hex_string_key(key)) {
-			is_valid = false;
-			cout << "Invalid input, try again : ";
-		}
-	} while (!is_valid);
-	
-	// Tampilkan input dan proses enkripsi
-	cout << "Original input: " << plain_txt << endl;
-	cout << "Key entered: " << key << endl;
-	cout << endl;
 	DES.encrypt(plain_txt, key);
 	
 	return 0;
