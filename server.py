@@ -60,24 +60,22 @@ try:
     #sock.settimeout(10)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1 )
     
-    # Add timeout to make socket interruptible
-    sock.settimeout(1.0)  # Check every 1 second
+    # Tambahkan timeout untuk membuat socket dapat diinterupsi
+    sock.settimeout(1.0)
 
-    # Bind the socket to the port
+    # Bind socket ke port
     server_address = ('0.0.0.0', 10000) #--> gunakan 0.0.0.0 agar binding ke seluruh ip yang tersedia
 
     logging.info(f"starting up on {server_address}")
     sock.bind(server_address)
-    # Listen for incoming connections
+    # Listen koneksi masuk
     sock.listen(5)
     #1 = backlog, merupakan jumlah dari koneksi yang belum teraccept/dilayani yang bisa ditampung, diluar jumlah
     #             tsb, koneks akan direfuse
     while True:
         try:
-            # Wait for a connection
+            # Tunggu koneksi dari client
             connection, client_address = sock.accept()
-            
-            # Remove timeout for client connection
             connection.settimeout(None)
             
             # Buat thread baru untuk handle client ini
@@ -85,7 +83,6 @@ try:
             client_thread.daemon = True
             client_thread.start()
         except socket.timeout:
-            # Timeout is expected, just continue to check for KeyboardInterrupt
             continue
         
 except KeyboardInterrupt:
